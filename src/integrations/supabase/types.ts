@@ -123,6 +123,77 @@ export type Database = {
         }
         Relationships: []
       }
+      predictions: {
+        Row: {
+          created_at: string | null
+          grand_prix_id: string
+          id: string
+          is_calculated: boolean | null
+          podium: string[] | null
+          points: number | null
+          pole: string | null
+          profile_id: string
+          season: number
+          winner: string | null
+          winning_team: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          grand_prix_id: string
+          id?: string
+          is_calculated?: boolean | null
+          podium?: string[] | null
+          points?: number | null
+          pole?: string | null
+          profile_id: string
+          season: number
+          winner?: string | null
+          winning_team?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          grand_prix_id?: string
+          id?: string
+          is_calculated?: boolean | null
+          podium?: string[] | null
+          points?: number | null
+          pole?: string | null
+          profile_id?: string
+          season?: number
+          winner?: string | null
+          winning_team?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

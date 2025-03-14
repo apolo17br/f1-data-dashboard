@@ -13,6 +13,7 @@ import Telemetry from "./pages/Telemetry";
 import Predictions from "./pages/Predictions";
 import Forecast from "./pages/Forecast";
 import Constructors from "./pages/Constructors";
+import Historia from "./pages/Historia";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/predictions" element={<Predictions />} />
           <Route path="/forecast" element={<Forecast />} />
           <Route path="/constructors" element={<Constructors />} />
+          <Route path="/historia" element={<Historia />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

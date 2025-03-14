@@ -49,21 +49,23 @@ export const useConstructorStandings = (season?: number) => {
     queryKey: ["constructorStandings", season],
     queryFn: async () => {
       // Na implementação real, filtraria por corridas da temporada selecionada
-      const { data, error } = await supabase
+      const { data: standingsData, error } = await supabase
         .from("constructor_standings")
         .select("*")
         .order("position", { ascending: true });
       
       if (error) throw error;
       
-      // Buscar construtores separadamente e mesclar os dados
-      const constructors = await supabase.from("constructors").select("*");
+      // Buscar construtores separadamente
+      const { data: constructorsData, error: constructorsError } = await supabase
+        .from("constructors")
+        .select("*");
       
-      if (constructors.error) throw constructors.error;
+      if (constructorsError) throw constructorsError;
       
       // Mapear os dados para incluir as informações do construtor
-      const standingsWithConstructors = data.map(standing => {
-        const constructor = constructors.data.find(c => c.constructorId === standing.constructorId);
+      const standingsWithConstructors = standingsData.map(standing => {
+        const constructor = constructorsData.find(c => c.constructorId === standing.constructorId);
         return {
           ...standing,
           constructor: constructor as Constructor
@@ -88,18 +90,20 @@ export const useConstructorResults = (constructorId?: number, season?: number) =
         query = query.eq("constructorId", constructorId);
       }
       
-      const { data, error } = await query;
+      const { data: resultsData, error } = await query;
       
       if (error) throw error;
       
-      // Buscar construtores separadamente e mesclar os dados
-      const constructors = await supabase.from("constructors").select("*");
+      // Buscar construtores separadamente
+      const { data: constructorsData, error: constructorsError } = await supabase
+        .from("constructors")
+        .select("*");
       
-      if (constructors.error) throw constructors.error;
+      if (constructorsError) throw constructorsError;
       
       // Mapear os dados para incluir as informações do construtor
-      const resultsWithConstructors = data.map(result => {
-        const constructor = constructors.data.find(c => c.constructorId === result.constructorId);
+      const resultsWithConstructors = resultsData.map(result => {
+        const constructor = constructorsData.find(c => c.constructorId === result.constructorId);
         return {
           ...result,
           constructor: constructor as Constructor
