@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +13,7 @@ import Predictions from "./pages/Predictions";
 import Forecast from "./pages/Forecast";
 import Constructors from "./pages/Constructors";
 import Historia from "./pages/Historia";
+import ConstrutoresHistoria from "./pages/historia/Construtores";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,6 +40,7 @@ const App = () => (
           <Route path="/forecast" element={<Forecast />} />
           <Route path="/constructors" element={<Constructors />} />
           <Route path="/historia" element={<Historia />} />
+          <Route path="/historia/construtores" element={<ConstrutoresHistoria />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -12,7 +11,9 @@ import {
   Menu,
   X,
   Sun,
-  Moon
+  Moon,
+  History,
+  Brain
 } from "lucide-react";
 
 type NavItemProps = {
@@ -68,6 +69,8 @@ const Sidebar = () => {
     { icon: <Trophy />, label: "Campeonato", href: "/championship" },
     { icon: <Clock />, label: "Telemetria", href: "/telemetry" },
     { icon: <Users />, label: "Nossos Palpites", href: "/predictions" },
+    { icon: <History />, label: "História", href: "/historia" },
+    { icon: <Brain />, label: "Previsões", href: "/forecast" },
   ];
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);

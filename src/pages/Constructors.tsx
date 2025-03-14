@@ -1,231 +1,234 @@
-
-import { useState } from "react";
 import Layout from "@/components/Layout";
-import SeasonSelector from "@/components/SeasonSelector";
-import { useConstructors, useConstructorStandings } from "@/hooks/useConstructorsData";
+import { useTopConstructors, useTopConstructorsByWins, useConstructorNationalities } from "@/hooks/useConstructorsData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BarChart, ResponsiveContainer, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import { Trophy, Medal, Flag, Award } from "lucide-react";
 
 const Constructors = () => {
-  const [selectedSeason, setSelectedSeason] = useState<number>(2025);
-  const { data: constructors, isLoading: isLoadingConstructors } = useConstructors(selectedSeason);
-  const { data: standings, isLoading: isLoadingStandings } = useConstructorStandings(selectedSeason);
+  const { data: topConstructors, isLoading: isLoadingTop } = useTopConstructors();
+  const { data: topByWins, isLoading: isLoadingWins } = useTopConstructorsByWins();
+  const { data: nationalities, isLoading: isLoadingNationalities } = useConstructorNationalities();
 
-  const handleSeasonChange = (season: number) => {
-    setSelectedSeason(season);
-  };
-
-  // Preparar dados para o gráfico
-  const chartData = standings?.map(standing => ({
-    name: standing.constructor?.name || `ID: ${standing.constructorId}`,
-    points: standing.points,
-    wins: standing.wins,
-    color: getTeamColor(standing.constructor?.name || "")
-  })) || [];
+  const isLoading = isLoadingTop || isLoadingWins || isLoadingNationalities;
 
   return (
     <Layout>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Construtores</h1>
+          <h1 className="text-3xl font-bold mb-2">História dos Construtores</h1>
           <p className="text-muted-foreground">
-            Análise de desempenho e dados das equipes de Fórmula 1
+            Análise histórica das equipes que fizeram parte da Fórmula 1
           </p>
         </div>
-        <SeasonSelector onChange={handleSeasonChange} defaultSeason={selectedSeason} />
-      </div>
 
-      {(isLoadingConstructors || isLoadingStandings) ? (
-        <div className="flex items-center justify-center min-h-[300px]">
-          <div className="w-12 h-12 border-4 border-t-f1-red border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Pontuação das Equipes</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Maior Pontuador
+              </CardTitle>
+              <Trophy className="h-4 w-4 text-f1-red" />
             </CardHeader>
             <CardContent>
-              <div className="h-[400px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={chartData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="name" 
-                      angle={-45} 
-                      textAnchor="end" 
-                      tick={{ fontSize: 12 }}
-                      height={70}
-                    />
-                    <YAxis />
-                    <Tooltip 
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          return (
-                            <div className="bg-background border border-border p-3 rounded-md shadow-md">
-                              <p className="font-bold">{payload[0].payload.name}</p>
-                              <p className="text-sm">Pontos: <span className="font-mono">{payload[0].value}</span></p>
-                              <p className="text-sm">Vitórias: <span className="font-mono">{payload[0].payload.wins}</span></p>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Legend />
-                    <Bar 
-                      dataKey="points" 
-                      name="Pontos" 
-                      fill="var(--f1-red)" 
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <div className="text-2xl font-bold">{topConstructors?.[0]?.name || "—"}</div>
+              <p className="text-xs text-muted-foreground">
+                {topConstructors?.[0]?.totalPoints?.toLocaleString() || 0} pontos na história
+              </p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle>Vitórias por Equipe</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Mais Vitórias
+              </CardTitle>
+              <Medal className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
-              <div className="h-[400px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={chartData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="name" 
-                      angle={-45} 
-                      textAnchor="end" 
-                      tick={{ fontSize: 12 }}
-                      height={70}
-                    />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar 
-                      dataKey="wins" 
-                      name="Vitórias" 
-                      fill="#FFB800" 
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <div className="text-2xl font-bold">{topByWins?.[0]?.name || "—"}</div>
+              <p className="text-xs text-muted-foreground">
+                {topByWins?.[0]?.totalWins?.toLocaleString() || 0} vitórias
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                País com Mais Equipes
+              </CardTitle>
+              <Flag className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{nationalities?.[0]?.nationality || "—"}</div>
+              <p className="text-xs text-muted-foreground">
+                {nationalities?.[0]?.count || 0} equipes na história
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Top 10 Equipes
+              </CardTitle>
+              <Award className="h-4 w-4 text-purple-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{topConstructors?.length || 0}</div>
+              <p className="text-xs text-muted-foreground">
+                equipes mais bem sucedidas
+              </p>
             </CardContent>
           </Card>
         </div>
-      )}
 
-      <div className="mb-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Classificação de Construtores</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-4">Pos</th>
-                    <th className="text-left py-3 px-4">Equipe</th>
-                    <th className="text-left py-3 px-4">Nacionalidade</th>
-                    <th className="text-right py-3 px-4">Vitórias</th>
-                    <th className="text-right py-3 px-4">Pontos</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {standings?.map((standing, index) => (
-                    <tr 
-                      key={standing.constructorStandingsId} 
-                      className="border-b border-border hover:bg-secondary/50 transition-colors"
+        <Tabs defaultValue="pontos" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="pontos">Por Pontos</TabsTrigger>
+            <TabsTrigger value="vitorias">Por Vitórias</TabsTrigger>
+            <TabsTrigger value="nacionalidades">Por Nacionalidade</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pontos">
+            <Card>
+              <CardHeader>
+                <CardTitle>Top 10 Construtores por Pontos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[400px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={topConstructors}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
                     >
-                      <td className="py-3 px-4">{standing.position}</td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-3">
-                          <div 
-                            className="w-4 h-4 rounded-full" 
-                            style={{ backgroundColor: getTeamColor(standing.constructor?.name || "") }}
-                          ></div>
-                          <span className="font-medium">{standing.constructor?.name || `ID: ${standing.constructorId}`}</span>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4">{standing.constructor?.nationality || "—"}</td>
-                      <td className="py-3 px-4 text-right font-mono">{standing.wins}</td>
-                      <td className="py-3 px-4 text-right font-mono font-bold">{standing.points}</td>
-                    </tr>
-                  ))}
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis
+                        dataKey="name"
+                        angle={-45}
+                        textAnchor="end"
+                        height={70}
+                      />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar
+                        dataKey="totalPoints"
+                        name="Pontos Totais"
+                        fill="var(--f1-red)"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-                  {!standings?.length && (
-                    <tr>
-                      <td colSpan={5} className="py-8 text-center text-muted-foreground">
-                        Nenhum dado disponível para a temporada {selectedSeason}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <TabsContent value="vitorias">
+            <Card>
+              <CardHeader>
+                <CardTitle>Top 10 Construtores por Vitórias</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[400px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={topByWins}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis
+                        dataKey="name"
+                        angle={-45}
+                        textAnchor="end"
+                        height={70}
+                      />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar
+                        dataKey="totalWins"
+                        name="Vitórias Totais"
+                        fill="#FFB800"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-      <div>
+          <TabsContent value="nacionalidades">
+            <Card>
+              <CardHeader>
+                <CardTitle>Top 10 Nacionalidades</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[400px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={nationalities}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis
+                        dataKey="nationality"
+                        angle={-45}
+                        textAnchor="end"
+                        height={70}
+                      />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar
+                        dataKey="count"
+                        name="Número de Equipes"
+                        fill="#3b82f6"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
         <Card>
           <CardHeader>
             <CardTitle>Insights sobre as Equipes</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <p>
-                Com base nos dados disponíveis para a temporada {selectedSeason}, podemos observar:
-              </p>
-              
-              {chartData.length > 0 ? (
+              {isLoading ? (
+                <p className="text-muted-foreground">Carregando insights...</p>
+              ) : (
                 <>
+                  <p>
+                    Com base nos dados históricos da Fórmula 1, podemos observar:
+                  </p>
+                  
                   <ul className="list-disc pl-6 space-y-2">
                     <li>
-                      A equipe {chartData[0]?.name} lidera a classificação com {chartData[0]?.points} pontos.
+                      A equipe {topConstructors?.[0]?.name || "—"} é a maior pontuadora da história,
+                      com {topConstructors?.[0]?.totalPoints?.toLocaleString() || 0} pontos acumulados.
                     </li>
-                    {chartData[0]?.wins > 0 && (
-                      <li>
-                        A equipe líder conquistou {chartData[0]?.wins} vitórias até o momento.
-                      </li>
-                    )}
-                    {chartData.length >= 3 && (
-                      <li>
-                        As três primeiras equipes ({chartData[0]?.name}, {chartData[1]?.name} e {chartData[2]?.name}) 
-                        acumulam um total de {chartData.slice(0, 3).reduce((sum, team) => sum + team.points, 0)} pontos.
-                      </li>
-                    )}
-                    {chartData.filter(team => team.wins > 0).length > 1 && (
-                      <li>
-                        {chartData.filter(team => team.wins > 0).length} equipes diferentes conquistaram vitórias nesta temporada.
-                      </li>
-                    )}
+                    <li>
+                      {topByWins?.[0]?.name || "—"} é a equipe com mais vitórias: {topByWins?.[0]?.totalWins || 0} no total.
+                    </li>
+                    <li>
+                      {nationalities?.[0]?.nationality || "—"} é o país com mais equipes na história ({nationalities?.[0]?.count || 0}),
+                      seguido por {nationalities?.[1]?.nationality || "—"} ({nationalities?.[1]?.count || 0}).
+                    </li>
+                    <li>
+                      As três equipes mais vitoriosas ({topByWins?.slice(0, 3).map(t => t.name || "—").join(", ") || "—"})
+                      acumulam {topByWins?.slice(0, 3).reduce((sum, team) => sum + (team?.totalWins || 0), 0)} vitórias.
+                    </li>
                   </ul>
-                  
-                  <p>
-                    A diferença entre a equipe líder e a segunda colocada é de 
-                    {chartData.length >= 2 ? ` ${Math.abs(chartData[0].points - chartData[1].points)} ` : " "} 
-                    pontos, o que indica 
-                    {chartData.length >= 2 && (Math.abs(chartData[0].points - chartData[1].points) > 50 
-                      ? " uma liderança confortável." 
-                      : " uma disputa acirrada pelo título.")}
-                  </p>
                 </>
-              ) : (
-                <p className="text-muted-foreground italic">
-                  Não há dados suficientes para gerar insights para a temporada {selectedSeason}.
-                </p>
               )}
             </div>
           </CardContent>
@@ -234,33 +237,5 @@ const Constructors = () => {
     </Layout>
   );
 };
-
-// Função auxiliar para atribuir cores às equipes
-function getTeamColor(teamName: string): string {
-  const teamColors: Record<string, string> = {
-    "Red Bull": "#0600EF",
-    "Ferrari": "#DC0000",
-    "Mercedes": "#00D2BE",
-    "McLaren": "#FF8700",
-    "Aston Martin": "#006F62",
-    "Alpine": "#0090FF",
-    "Williams": "#005AFF",
-    "AlphaTauri": "#2B4562",
-    "RB": "#2B4562",
-    "Alfa Romeo": "#900000",
-    "Haas F1 Team": "#FFFFFF",
-    "Haas": "#FFFFFF",
-  };
-
-  // Busca parcial por nome de equipe
-  for (const [key, color] of Object.entries(teamColors)) {
-    if (teamName.includes(key)) {
-      return color;
-    }
-  }
-
-  // Cor padrão se não encontrar
-  return "#777777";
-}
 
 export default Constructors;
