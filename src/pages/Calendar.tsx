@@ -200,23 +200,29 @@ const Calendar = () => {
                 </div>
               ) : raceCalendar.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {raceCalendar.map((race, idx) => (
-                    <div
-                      key={idx}
-                      className="border border-border rounded-lg p-4 hover:bg-secondary/50 transition-colors"
-                      onClick={() => setSelectedDate(new Date(race.startDate))}
-                    >
-                      <div className="flex justify-between mb-2">
-                        <span className="font-mono text-muted-foreground text-sm">GP {idx + 1}</span>
-                        <span className="font-mono text-sm">{format(new Date(race.startDate), "dd/MM")}-{format(new Date(race.endDate), "dd/MM")}</span>
+                  {raceCalendar.map((race, idx) => {
+                    const startDate = new Date(race.startDate);
+                    const endDate = new Date(race.endDate);
+                    return (
+                      <div
+                        key={idx}
+                        className="border border-border rounded-lg p-4 hover:bg-secondary/50 transition-colors cursor-pointer"
+                        onClick={() => setSelectedDate(new Date(race.startDate))}
+                      >
+                        <div className="flex justify-between mb-2">
+                          <span className="font-mono text-muted-foreground text-sm">GP {idx + 1}</span>
+                          <span className="font-mono text-sm">
+                            {format(startDate, "dd/MM")}-{format(endDate, "dd/MM")}
+                          </span>
+                        </div>
+                        <h3 className="font-bold mb-1">{race.grandPrix}</h3>
+                        <div className="text-sm text-muted-foreground flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          <span>{race.location}, {race.country}</span>
+                        </div>
                       </div>
-                      <h3 className="font-bold mb-1">{race.grandPrix}</h3>
-                      <div className="text-sm text-muted-foreground flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        <span>{race.location}, {race.country}</span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="text-center text-muted-foreground">
