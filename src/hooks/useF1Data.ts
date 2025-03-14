@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { f1ApiService } from "@/services/api.service";
 import { RaceWeekend, Circuit, WeatherDay } from "@/types/f1.types";
@@ -77,7 +78,7 @@ export const useDashboardData = () => {
   const activeRace = currentRace || nextRace;
   
   // Set circuit ID based on active race
-  const circuitId = activeRace?.circuit?.id;
+  const circuitId = activeRace?.circuitId;
   
   // Fetch circuit details and weather
   const { data: circuit, isLoading: isLoadingCircuit } = useCircuit(circuitId);
