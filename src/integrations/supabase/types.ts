@@ -9,7 +9,120 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      circuits: {
+        Row: {
+          alt: number | null
+          circuitId: number
+          circuitRef: string | null
+          country: string | null
+          lat: number | null
+          lng: number | null
+          location: string | null
+          name: string | null
+          url: string | null
+        }
+        Insert: {
+          alt?: number | null
+          circuitId: number
+          circuitRef?: string | null
+          country?: string | null
+          lat?: number | null
+          lng?: number | null
+          location?: string | null
+          name?: string | null
+          url?: string | null
+        }
+        Update: {
+          alt?: number | null
+          circuitId?: number
+          circuitRef?: string | null
+          country?: string | null
+          lat?: number | null
+          lng?: number | null
+          location?: string | null
+          name?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
+      constructor_results: {
+        Row: {
+          constructorId: number | null
+          constructorResultsId: number
+          points: number | null
+          raceId: number | null
+          status: string | null
+        }
+        Insert: {
+          constructorId?: number | null
+          constructorResultsId: number
+          points?: number | null
+          raceId?: number | null
+          status?: string | null
+        }
+        Update: {
+          constructorId?: number | null
+          constructorResultsId?: number
+          points?: number | null
+          raceId?: number | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      constructor_standings: {
+        Row: {
+          constructorId: number | null
+          constructorStandingsId: number
+          points: number | null
+          position: number | null
+          positionText: string | null
+          raceId: number | null
+          wins: number | null
+        }
+        Insert: {
+          constructorId?: number | null
+          constructorStandingsId: number
+          points?: number | null
+          position?: number | null
+          positionText?: string | null
+          raceId?: number | null
+          wins?: number | null
+        }
+        Update: {
+          constructorId?: number | null
+          constructorStandingsId?: number
+          points?: number | null
+          position?: number | null
+          positionText?: string | null
+          raceId?: number | null
+          wins?: number | null
+        }
+        Relationships: []
+      }
+      constructors: {
+        Row: {
+          constructorId: number
+          constructorRef: string | null
+          name: string | null
+          nationality: string | null
+          url: string | null
+        }
+        Insert: {
+          constructorId: number
+          constructorRef?: string | null
+          name?: string | null
+          nationality?: string | null
+          url?: string | null
+        }
+        Update: {
+          constructorId?: number
+          constructorRef?: string | null
+          name?: string | null
+          nationality?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
