@@ -216,7 +216,9 @@ const Telemetry = () => {
                               <p className="font-medium">Setor {label}</p>
                               <div className="mt-2 space-y-1">
                                 {payload.map((entry, index) => {
-                                  const driverId = entry.dataKey.split('_')[0];
+                                  // Safely extract the driver ID from the dataKey string
+                                  const dataKey = String(entry.dataKey);
+                                  const driverId = dataKey.includes("_") ? dataKey.split("_")[0] : "";
                                   const driver = drivers.find(d => d.id === driverId);
                                   return (
                                     <div key={index} className="flex items-center justify-between gap-4">
@@ -239,24 +241,29 @@ const Telemetry = () => {
                       }}
                     />
                     <Legend 
-                      content={({ payload }) => (
-                        <div className="flex flex-wrap justify-center gap-4 mt-4">
-                          {payload?.map((entry, index) => {
-                            const driverId = entry.dataKey.split('_')[0];
-                            const driver = drivers.find(d => d.id === driverId);
-                            if (!driver) return null;
-                            return (
-                              <div key={index} className="flex items-center gap-2">
-                                <div 
-                                  className="w-3 h-3 rounded-full" 
-                                  style={{ backgroundColor: entry.color }}
-                                ></div>
-                                <span>{driver.name}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                      content={({ payload }) => {
+                        if (!payload) return null;
+                        return (
+                          <div className="flex flex-wrap justify-center gap-4 mt-4">
+                            {payload.map((entry, index) => {
+                              // Safely extract the driver ID from the dataKey
+                              const dataKey = String(entry.dataKey);
+                              const driverId = dataKey.includes("_") ? dataKey.split("_")[0] : "";
+                              const driver = drivers.find(d => d.id === driverId);
+                              if (!driver) return null;
+                              return (
+                                <div key={index} className="flex items-center gap-2">
+                                  <div 
+                                    className="w-3 h-3 rounded-full" 
+                                    style={{ backgroundColor: entry.color }}
+                                  ></div>
+                                  <span>{driver.name}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      }}
                     />
                     {drivers.map(driver => (
                       <Line 
